@@ -11,6 +11,8 @@ lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
 t/00-check-deps.t
 t/00-compile.t
 t/01-basic.t
+t/02-deprecated.t
+t/03-specific-version.t
 weaver.ini
 xt/author/pod-spell.t
 xt/release/changes_has_content.t

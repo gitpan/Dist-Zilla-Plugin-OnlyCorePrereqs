@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.001';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.002';
 }
-# git description: 8cf5ce6
+# git description: v0.001-3-gcfe2506
 
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
@@ -72,11 +72,25 @@ sub after_build
                 . $added_in . ': ' . $prereq)
                     if version->parse($added_in) > $self->starting_version;
 
-            my $deprecated_in = Module::CoreList->deprecated_in($prereq);
-            $self->log_fatal('detected a ' . $phase
-                . ' requires dependency that was deprecated from core in '
-                . $deprecated_in . ': '. $prereq)
-                    if $deprecated_in;
+            my $has = $Module::CoreList::version{$self->starting_version}{$prereq};
+            $has = version->parse($has);    # XXX bug? cannot do this in one line, above
+            my $wanted = version->parse($prereqs->{$phase}{requires}{$prereq});
+
+            if ($has < $wanted)
+            {
+                $self->log_fatal('detected a ' . $phase . ' requires dependency on '
+                    . $prereq . ' ' . $wanted . ': perl ' . $self->starting_version
+                    . ' only has ' . $has);
+            }
+
+            if (not $self->deprecated_ok)
+            {
+                my $deprecated_in = Module::CoreList->deprecated_in($prereq);
+                $self->log_fatal('detected a ' . $phase
+                    . ' requires dependency that was deprecated from core in '
+                    . $deprecated_in . ': '. $prereq)
+                        if $deprecated_in;
+            }
         }
     }
 }
@@ -97,7 +111,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 

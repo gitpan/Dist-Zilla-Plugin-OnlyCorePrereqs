@@ -1,5 +1,10 @@
 Revision history for Dist-Zilla-Plugin-OnlyCorePrereqs
 
+0.002     2013-08-17 17:17:03Z (Karen Etheridge)
+          - now respecting the deprecated_ok config
+          - also check that the specific version of the prereq is available in
+            the indicated perl version
+
 0.001     2013-08-17 05:22:00Z (Karen Etheridge)
           - Initial release.
 
