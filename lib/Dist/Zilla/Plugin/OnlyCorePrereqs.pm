@@ -2,19 +2,20 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.002';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.003';
 }
-# git description: v0.001-3-gcfe2506
+# git description: v0.002-4-g51922da
 
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
+use 5.010;
 use Moose;
 with 'Dist::Zilla::Role::AfterBuild';
 use Moose::Util::TypeConstraints;
-use Module::CoreList;
+use Module::CoreList 2.77;
 use MooseX::Types::Perl 0.101340 'LaxVersionStr';
 use namespace::autoclean;
 
@@ -29,11 +30,8 @@ has phases => (
 has starting_version => (
     is => 'ro',
     isa => do {
-        my $version_string = subtype as 'Str',
-            where { LaxVersionStr->check( $_ ) },
-            message { 'starting_version must be in a valid version format - see version.pm' };
-        my $version = subtype as $version_string;
-        coerce $version, from $version_string, via { version->parse($_) };
+        my $version = subtype as class_type('version');
+        coerce $version, from LaxVersionStr, via { version->parse($_) };
         $version;
     },
     coerce => 1,
@@ -47,6 +45,26 @@ has deprecated_ok => (
 
 sub mvp_multivalue_args { qw(phases) }
 sub mvp_aliases { { phase => 'phases' } }
+
+around BUILDARGS => sub
+{
+    my $orig = shift;
+    my $self = shift;
+
+    my $args = $self->$orig(@_);
+
+    if (($args->{starting_version} // '') eq 'current')
+    {
+        $args->{starting_version} = $^V;
+    }
+    elsif (($args->{starting_version} // '') eq 'latest')
+    {
+        my $latest = (reverse sort keys %Module::CoreList::released)[0];
+        $args->{starting_version} = version->parse($latest);
+    }
+
+    $args;
+};
 
 sub after_build
 {
@@ -72,7 +90,7 @@ sub after_build
                 . $added_in . ': ' . $prereq)
                     if version->parse($added_in) > $self->starting_version;
 
-            my $has = $Module::CoreList::version{$self->starting_version}{$prereq};
+            my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
             $has = version->parse($has);    # XXX bug? cannot do this in one line, above
             my $wanted = version->parse($prereqs->{$phase}{requires}{$prereq});
 
@@ -111,7 +129,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -140,11 +158,30 @@ Indicates a phase to check against. Can be provided more than once; defaults
 to C<runtime> and C<test>.  (See L<Dist::Zilla::Plugin::Prereqs> for more
 information about phases.)
 
+Remember that you can use different settings for different phases by employing
+this plugin twice, with different names.
+
 =item * C<starting_version>
 
 Indicates the first perl version that should be checked against; any versions
 earlier than this are not considered significant for the purposes of core
 checks.  Defaults to C<5.005>.
+
+There are two special values supported:
+
+=over 4
+
+=item * C<current> - indicates the version of Perl that you are currently running with
+
+=item * C<latest> - indicates the most recent release of Perl
+
+=back
+
+(Note: if you wish to check against B<all> changes in core up to the very
+latest Perl release, or you should upgrade your L<Module::CoreList> installation.
+You can guarantee you are always running the latest version with
+L<Dist::Zilla::Plugin::PromptIfStale>. This module is also the mechanism used for
+determining the version of the latest Perl release.)
 
 =item * C<deprecated_ok>
 

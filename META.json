@@ -42,12 +42,12 @@
       "runtime" : {
          "requires" : {
             "Dist::Zilla::Role::AfterBuild" : "0",
-            "Module::CoreList" : "0",
+            "Module::CoreList" : "2.77",
             "Moose" : "0",
             "Moose::Util::TypeConstraints" : "0",
             "MooseX::Types::Perl" : "0.101340",
             "namespace::autoclean" : "0",
-            "perl" : "5.006",
+            "perl" : "5.010",
             "strict" : "0",
             "warnings" : "0"
          }
@@ -68,7 +68,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::OnlyCorePrereqs" : {
          "file" : "lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm",
-         "version" : "0.002"
+         "version" : "0.003"
       }
    },
    "release_status" : "stable",
@@ -84,7 +84,7 @@
          "web" : "https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs"
       }
    },
-   "version" : "0.002",
+   "version" : "0.003",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.019002"
