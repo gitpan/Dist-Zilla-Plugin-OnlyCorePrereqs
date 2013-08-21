@@ -46,7 +46,7 @@ use Test::DZil;
     {
         like(
             exception { $tzil->build },
-            qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency on feature 1.33: perl $^V only has \d\.\d+\E/,
+            qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency on feature 1.33: perl $^V only has \E\d\.\d+/,
             'version of perl is too old for feature 1.33 (need 5.019) - plugin check fails',
         );
     }
@@ -83,6 +83,26 @@ SKIP:
         exception { $tzil->build },
         undef,
         'Carp is new enough in 5.019001 - plugin check succeeds',
+    );
+}
+
+{
+    my $tzil = Builder->from_config(
+        { dist_root => 't/corpus/basic' },
+        {
+            add_files => {
+                'source/dist.ini' => simple_ini(
+                    [ Prereqs => RuntimeRequires => { 'File::stat' => '0' } ],
+                    [ OnlyCorePrereqs => ],
+                ),
+            },
+        },
+    );
+
+    is(
+        exception { $tzil->build },
+        undef,
+        'File::stat is undef in 5.005, but good enough - plugin check succeeds',
     );
 }
 

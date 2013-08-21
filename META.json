@@ -23,14 +23,14 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build::Tiny" : "0.025"
+            "Module::Build::Tiny" : "0.026"
          }
       },
       "develop" : {
          "requires" : {
             "Dist::Zilla" : "4.300035",
             "Dist::Zilla::Plugin::ModuleBuildTiny" : "0.004",
-            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.018",
+            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.019",
             "Pod::Coverage::TrustPod" : "0",
             "Test::CPAN::Changes" : "0.19",
             "Test::CPAN::Meta" : "0",
@@ -68,7 +68,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::OnlyCorePrereqs" : {
          "file" : "lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm",
-         "version" : "0.003"
+         "version" : "0.004"
       }
    },
    "release_status" : "stable",
@@ -84,10 +84,10 @@
          "web" : "https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs"
       }
    },
-   "version" : "0.003",
+   "version" : "0.004",
    "x_Dist_Zilla" : {
       "perl" : {
-         "version" : "5.019002"
+         "version" : "5.019003"
       },
       "plugins" : [
          {
@@ -104,36 +104,6 @@
             "class" : "Dist::Zilla::Plugin::PromptIfStale",
             "name" : "@Author::ETHER/release",
             "version" : "0.002"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::GithubMeta",
-            "name" : "@Author::ETHER/GithubMeta",
-            "version" : "0.30"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::AutoMetaResources",
-            "name" : "@Author::ETHER/AutoMetaResources",
-            "version" : "1.20"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::Authority",
-            "name" : "@Author::ETHER/Authority",
-            "version" : "1.006"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::MetaNoIndex",
-            "name" : "@Author::ETHER/MetaNoIndex",
-            "version" : "4.300035"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::MetaProvides::Package",
-            "name" : "@Author::ETHER/MetaProvides::Package",
-            "version" : "1.14000003"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::MetaConfig",
-            "name" : "@Author::ETHER/MetaConfig",
-            "version" : "4.300035"
          },
          {
             "class" : "Dist::Zilla::Plugin::ExecDir",
@@ -262,6 +232,11 @@
             "version" : "1.001"
          },
          {
+            "class" : "Dist::Zilla::Plugin::Test::Kwalitee",
+            "name" : "@Author::ETHER/Test::Kwalitee",
+            "version" : "2.06"
+         },
+         {
             "class" : "Dist::Zilla::Plugin::PruneCruft",
             "name" : "@Author::ETHER/PruneCruft",
             "version" : "4.300035"
@@ -289,6 +264,36 @@
          {
             "class" : "Dist::Zilla::Plugin::NextRelease",
             "name" : "@Author::ETHER/NextRelease",
+            "version" : "4.300035"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::GithubMeta",
+            "name" : "@Author::ETHER/GithubMeta",
+            "version" : "0.30"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::AutoMetaResources",
+            "name" : "@Author::ETHER/AutoMetaResources",
+            "version" : "1.20"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Authority",
+            "name" : "@Author::ETHER/Authority",
+            "version" : "1.006"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaNoIndex",
+            "name" : "@Author::ETHER/MetaNoIndex",
+            "version" : "4.300035"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaProvides::Package",
+            "name" : "@Author::ETHER/MetaProvides::Package",
+            "version" : "1.14000003"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaConfig",
+            "name" : "@Author::ETHER/MetaConfig",
             "version" : "4.300035"
          },
          {
@@ -417,11 +422,6 @@
             "class" : "Dist::Zilla::Plugin::ConfirmRelease",
             "name" : "@Author::ETHER/ConfirmRelease",
             "version" : "4.300035"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::Test::Kwalitee",
-            "name" : "Test::Kwalitee",
-            "version" : "2.06"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",

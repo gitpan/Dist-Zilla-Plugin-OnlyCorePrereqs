@@ -1,14 +1,14 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
-{
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.003';
-}
-# git description: v0.002-4-g51922da
-
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
+{
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.004';
+}
+# git description: v0.003-4-g4532645
+
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
 use 5.010;
@@ -59,6 +59,7 @@ around BUILDARGS => sub
     }
     elsif (($args->{starting_version} // '') eq 'latest')
     {
+        # needs to be two clauses because of version.pm: RT#87983
         my $latest = (reverse sort keys %Module::CoreList::released)[0];
         $args->{starting_version} = version->parse($latest);
     }
@@ -91,7 +92,7 @@ sub after_build
                     if version->parse($added_in) > $self->starting_version;
 
             my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
-            $has = version->parse($has);    # XXX bug? cannot do this in one line, above
+            $has = version->parse($has);    # version.pm XS hates tie() - RT#87983
             my $wanted = version->parse($prereqs->{$phase}{requires}{$prereq});
 
             if ($has < $wanted)
@@ -129,7 +130,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 

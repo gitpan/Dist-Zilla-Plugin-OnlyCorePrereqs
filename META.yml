@@ -12,7 +12,7 @@ build_requires:
   Test::Warnings: 0
   blib: 0
 configure_requires:
-  Module::Build::Tiny: 0.025
+  Module::Build::Tiny: 0.026
 dynamic_config: 0
 generated_by: 'Dist::Zilla version 4.300035, CPAN::Meta::Converter version 2.132140'
 license: perl
@@ -28,7 +28,7 @@ no_index:
 provides:
   Dist::Zilla::Plugin::OnlyCorePrereqs:
     file: lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
-    version: 0.003
+    version: 0.004
 requires:
   Dist::Zilla::Role::AfterBuild: 0
   Module::CoreList: 2.77
@@ -43,10 +43,10 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-OnlyCorePrereqs
   homepage: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs
   repository: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs.git
-version: 0.003
+version: 0.004
 x_Dist_Zilla:
   perl:
-    version: 5.019002
+    version: 5.019003
   plugins:
     -
       class: Dist::Zilla::Plugin::Git::NextVersion
@@ -60,30 +60,6 @@ x_Dist_Zilla:
       class: Dist::Zilla::Plugin::PromptIfStale
       name: '@Author::ETHER/release'
       version: 0.002
-    -
-      class: Dist::Zilla::Plugin::GithubMeta
-      name: '@Author::ETHER/GithubMeta'
-      version: 0.30
-    -
-      class: Dist::Zilla::Plugin::AutoMetaResources
-      name: '@Author::ETHER/AutoMetaResources'
-      version: 1.20
-    -
-      class: Dist::Zilla::Plugin::Authority
-      name: '@Author::ETHER/Authority'
-      version: 1.006
-    -
-      class: Dist::Zilla::Plugin::MetaNoIndex
-      name: '@Author::ETHER/MetaNoIndex'
-      version: 4.300035
-    -
-      class: Dist::Zilla::Plugin::MetaProvides::Package
-      name: '@Author::ETHER/MetaProvides::Package'
-      version: 1.14000003
-    -
-      class: Dist::Zilla::Plugin::MetaConfig
-      name: '@Author::ETHER/MetaConfig'
-      version: 4.300035
     -
       class: Dist::Zilla::Plugin::ExecDir
       name: '@Author::ETHER/ExecDir'
@@ -184,6 +160,10 @@ x_Dist_Zilla:
       name: '@Author::ETHER/Test::Pod::No404s'
       version: 1.001
     -
+      class: Dist::Zilla::Plugin::Test::Kwalitee
+      name: '@Author::ETHER/Test::Kwalitee'
+      version: 2.06
+    -
       class: Dist::Zilla::Plugin::PruneCruft
       name: '@Author::ETHER/PruneCruft'
       version: 4.300035
@@ -206,6 +186,30 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::NextRelease
       name: '@Author::ETHER/NextRelease'
+      version: 4.300035
+    -
+      class: Dist::Zilla::Plugin::GithubMeta
+      name: '@Author::ETHER/GithubMeta'
+      version: 0.30
+    -
+      class: Dist::Zilla::Plugin::AutoMetaResources
+      name: '@Author::ETHER/AutoMetaResources'
+      version: 1.20
+    -
+      class: Dist::Zilla::Plugin::Authority
+      name: '@Author::ETHER/Authority'
+      version: 1.006
+    -
+      class: Dist::Zilla::Plugin::MetaNoIndex
+      name: '@Author::ETHER/MetaNoIndex'
+      version: 4.300035
+    -
+      class: Dist::Zilla::Plugin::MetaProvides::Package
+      name: '@Author::ETHER/MetaProvides::Package'
+      version: 1.14000003
+    -
+      class: Dist::Zilla::Plugin::MetaConfig
+      name: '@Author::ETHER/MetaConfig'
       version: 4.300035
     -
       class: Dist::Zilla::Plugin::AutoPrereqs
@@ -307,10 +311,6 @@ x_Dist_Zilla:
       class: Dist::Zilla::Plugin::ConfirmRelease
       name: '@Author::ETHER/ConfirmRelease'
       version: 4.300035
-    -
-      class: Dist::Zilla::Plugin::Test::Kwalitee
-      name: Test::Kwalitee
-      version: 2.06
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':InstallModules'
