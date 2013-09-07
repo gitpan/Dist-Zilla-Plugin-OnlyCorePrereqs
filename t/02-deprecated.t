@@ -4,6 +4,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use Test::Warnings;
 use Test::Fatal;
+use Test::Deep;
 use Test::DZil;
 
 {
@@ -21,7 +22,13 @@ use Test::DZil;
 
     like(
         exception { $tzil->build },
-        qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency that was deprecated from core in 5.011: Switch\E/,
+        qr/\Q[OnlyCorePrereqs] aborting\E/,
+        'build aborted'
+    );
+
+    cmp_deeply(
+        $tzil->log_messages,
+        supersetof('[OnlyCorePrereqs] detected a runtime requires dependency that was deprecated from core in 5.011: Switch'),
         'Switch has been deprecated',
     );
 }
@@ -42,6 +49,11 @@ use Test::DZil;
     is(
         exception { $tzil->build },
         undef,
+        'build is not aborted',
+    );
+
+    ok(
+        (!grep { /\[OnlyCorePrereqs\]/ } @{$tzil->log_messages}),
         'Switch has been deprecated, but that\'s ok!',
     );
 }

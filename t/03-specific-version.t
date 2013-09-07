@@ -4,6 +4,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use Test::Warnings;
 use Test::Fatal;
+use Test::Deep;
 use Test::DZil;
 
 {
@@ -21,9 +22,15 @@ use Test::DZil;
 
     like(
         exception { $tzil->build },
-        qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency on HTTP::Tiny 0.025: perl 5.014 only has 0.012\E/,
-        'HTTP::Tiny was in core in 5.014, but only at version 0.012 - plugin check fails',
+        qr/\Q[OnlyCorePrereqs] aborting\E/,
+        'build aborted'
     );
+
+    cmp_deeply(
+        $tzil->log_messages,
+        supersetof('[OnlyCorePrereqs] detected a runtime requires dependency on HTTP::Tiny 0.025: perl 5.014 only has 0.012'),
+        'HTTP::Tiny was in core in 5.014, but only at version 0.012 - plugin check fails',
+    ) or diag explain $tzil->log_messages;
 }
 
 {
@@ -46,7 +53,13 @@ use Test::DZil;
     {
         like(
             exception { $tzil->build },
-            qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency on feature 1.33: perl $^V only has \E\d\.\d+/,
+            qr/\Q[OnlyCorePrereqs] aborting\E/,
+            'build aborted'
+        );
+
+        cmp_deeply(
+            $tzil->log_messages,
+            supersetof(re(qr/\Q[OnlyCorePrereqs] detected a runtime requires dependency on feature 1.33: perl $^V only has \E\d\.\d+/)),
             'version of perl is too old for feature 1.33 (need 5.019) - plugin check fails',
         );
     }
@@ -55,6 +68,11 @@ use Test::DZil;
         is(
             exception { $tzil->build },
             undef,
+            'build is not aborted',
+        );
+
+        ok(
+            (!grep { /\[OnlyCorePrereqs\]/ } @{$tzil->log_messages}),
             'version of perl is new enough for feature 1.33 (need 5.019) - plugin check succeeds',
         );
     }
@@ -82,6 +100,11 @@ SKIP:
     is(
         exception { $tzil->build },
         undef,
+        'build is not aborted',
+    );
+
+    ok(
+        (!grep { /\[OnlyCorePrereqs\]/ } @{$tzil->log_messages}),
         'Carp is new enough in 5.019001 - plugin check succeeds',
     );
 }
@@ -102,6 +125,11 @@ SKIP:
     is(
         exception { $tzil->build },
         undef,
+        'build is not aborted',
+    );
+
+    ok(
+        (!grep { /\[OnlyCorePrereqs\]/ } @{$tzil->log_messages}),
         'File::stat is undef in 5.005, but good enough - plugin check succeeds',
     );
 }

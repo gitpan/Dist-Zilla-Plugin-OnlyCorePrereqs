@@ -5,9 +5,9 @@ BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.004';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.005';
 }
-# git description: v0.003-4-g4532645
+# git description: v0.004-9-gcb0fad0
 
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
@@ -73,23 +73,29 @@ sub after_build
 
     my $prereqs = $self->zilla->distmeta->{prereqs};
 
+    # we build up a lists of all errors found
+    my (@non_core, @not_yet, @wanted, @deprecated);
+
     foreach my $phase ($self->phases)
     {
-        foreach my $prereq (keys %{ $prereqs->{$phase}{requires} || {} })
+        foreach my $prereq (keys %{ $prereqs->{$phase}{requires} // {} })
         {
             next if $prereq eq 'perl';
             $self->log_debug("checking $prereq");
 
             my $added_in = Module::CoreList->first_release($prereq);
 
-            $self->log_fatal('detected a ' . $phase
-                . ' requires dependency that is not in core: ' . $prereq)
-                    if not defined $added_in;
+            if (not defined $added_in)
+            {
+                push @non_core, [$phase, $prereq];
+                next;
+            }
 
-            $self->log_fatal('detected a ' . $phase
-                . ' requires dependency that was not added to core until '
-                . $added_in . ': ' . $prereq)
-                    if version->parse($added_in) > $self->starting_version;
+            if (version->parse($added_in) > $self->starting_version)
+            {
+                push @not_yet, [$phase, $added_in, $prereq];
+                next;
+            }
 
             my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
             $has = version->parse($has);    # version.pm XS hates tie() - RT#87983
@@ -97,21 +103,36 @@ sub after_build
 
             if ($has < $wanted)
             {
-                $self->log_fatal('detected a ' . $phase . ' requires dependency on '
-                    . $prereq . ' ' . $wanted . ': perl ' . $self->starting_version
-                    . ' only has ' . $has);
+                push @wanted, [ map { "$_" } $phase, $prereq, $wanted, $self->starting_version, $has];
+                next;
             }
 
             if (not $self->deprecated_ok)
             {
                 my $deprecated_in = Module::CoreList->deprecated_in($prereq);
-                $self->log_fatal('detected a ' . $phase
-                    . ' requires dependency that was deprecated from core in '
-                    . $deprecated_in . ': '. $prereq)
-                        if $deprecated_in;
+                if ($deprecated_in)
+                {
+                    push @deprecated, [$phase, $deprecated_in, $prereq];
+                    next;
+                }
             }
         }
     }
+
+    $self->log(['detected a %s requires dependency that is not in core: %s', @$_])
+        for @non_core;
+
+    $self->log(['detected a %s requires dependency that was not added to core until %s: %s', @$_])
+        for @not_yet;
+
+    $self->log(['detected a %s requires dependency on %s %s: perl %s only has %s', @$_])
+        for @wanted;
+
+    $self->log(['detected a %s requires dependency that was deprecated from core in %s: %s', @$_])
+        for @deprecated;
+
+    $self->log_fatal('aborting build due to invalid dependencies')
+        if @non_core || @not_yet || @wanted || @deprecated;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -122,7 +143,7 @@ __END__
 
 =encoding utf-8
 
-=for :stopwords Karen Etheridge irc
+=for :stopwords Karen Etheridge David Golden irc
 
 =head1 NAME
 
@@ -130,7 +151,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 
@@ -142,10 +163,12 @@ In your F<dist.ini>:
 =head1 DESCRIPTION
 
 C<[OnlyCorePrereqs]> is a L<Dist::Zilla> plugin that checks at build time if
-you have any declared prerequisites that are not shipped with perl.
+you have any declared prerequisites that are not shipped with Perl.
 
-You can specify the first perl version to check against, and which
+You can specify the first Perl version to check against, and which
 prerequisite phase(s) are significant.
+
+If the check fails, the build is aborted.
 
 =for Pod::Coverage after_build mvp_aliases mvp_multivalue_args
 
@@ -164,7 +187,7 @@ this plugin twice, with different names.
 
 =item * C<starting_version>
 
-Indicates the first perl version that should be checked against; any versions
+Indicates the first Perl version that should be checked against; any versions
 earlier than this are not considered significant for the purposes of core
 checks.  Defaults to C<5.005>.
 
@@ -174,14 +197,14 @@ There are two special values supported:
 
 =item * C<current> - indicates the version of Perl that you are currently running with
 
-=item * C<latest> - indicates the most recent release of Perl
+=item * C<latest> - indicates the most recent (stable or development) release of Perl
 
 =back
 
 (Note: if you wish to check against B<all> changes in core up to the very
-latest Perl release, or you should upgrade your L<Module::CoreList> installation.
+latest Perl release, you should upgrade your L<Module::CoreList> installation.
 You can guarantee you are always running the latest version with
-L<Dist::Zilla::Plugin::PromptIfStale>. This module is also the mechanism used for
+L<Dist::Zilla::Plugin::PromptIfStale>. L<Module::CoreList> is also the mechanism used for
 determining the version of the latest Perl release.)
 
 =item * C<deprecated_ok>
@@ -207,5 +230,9 @@ This software is copyright (c) 2013 by Karen Etheridge.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
+
+=head1 CONTRIBUTOR
+
+David Golden <dagolden@cpan.org>
 
 =cut
