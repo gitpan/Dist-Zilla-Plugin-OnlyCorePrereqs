@@ -5,9 +5,9 @@ BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.005';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.006';
 }
-# git description: v0.004-9-gcb0fad0
+# git description: v0.005-4-g774894f
 
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
@@ -43,6 +43,11 @@ has deprecated_ok => (
     default => 0,
 );
 
+has check_module_versions => (
+    is => 'ro', isa => 'Bool',
+    default => 1,
+);
+
 sub mvp_multivalue_args { qw(phases) }
 sub mvp_aliases { { phase => 'phases' } }
 
@@ -74,7 +79,7 @@ sub after_build
     my $prereqs = $self->zilla->distmeta->{prereqs};
 
     # we build up a lists of all errors found
-    my (@non_core, @not_yet, @wanted, @deprecated);
+    my (@non_core, @not_yet, @insufficient_version, @deprecated);
 
     foreach my $phase ($self->phases)
     {
@@ -97,14 +102,17 @@ sub after_build
                 next;
             }
 
-            my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
-            $has = version->parse($has);    # version.pm XS hates tie() - RT#87983
-            my $wanted = version->parse($prereqs->{$phase}{requires}{$prereq});
-
-            if ($has < $wanted)
+            if ($self->check_module_versions)
             {
-                push @wanted, [ map { "$_" } $phase, $prereq, $wanted, $self->starting_version, $has];
-                next;
+                my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
+                $has = version->parse($has);    # version.pm XS hates tie() - RT#87983
+                my $wanted = version->parse($prereqs->{$phase}{requires}{$prereq});
+
+                if ($has < $wanted)
+                {
+                    push @insufficient_version, [ map { "$_" } $phase, $prereq, $wanted, $self->starting_version, $has ];
+                    next;
+                }
             }
 
             if (not $self->deprecated_ok)
@@ -126,13 +134,13 @@ sub after_build
         for @not_yet;
 
     $self->log(['detected a %s requires dependency on %s %s: perl %s only has %s', @$_])
-        for @wanted;
+        for @insufficient_version;
 
     $self->log(['detected a %s requires dependency that was deprecated from core in %s: %s', @$_])
         for @deprecated;
 
     $self->log_fatal('aborting build due to invalid dependencies')
-        if @non_core || @not_yet || @wanted || @deprecated;
+        if @non_core || @not_yet || @insufficient_version || @deprecated;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -151,7 +159,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
@@ -211,6 +219,15 @@ determining the version of the latest Perl release.)
 
 A boolean flag indicating whether it is considered acceptable to depend on a
 deprecated module. Defaults to 0.
+
+=item * C<check_module_versions>
+
+A boolean flag indicating whether the specific module version available in the
+C<starting_version> of perl should also be checked.  Defaults to 1.
+
+(For example, a prerequisite of L<Test::More> 0.88  at C<starting_version>
+5.010 would fail with C<check_module_versions> set, as the version of
+L<Test::More> that shipped with that version of perl was only 0.72.
 
 =back
 
