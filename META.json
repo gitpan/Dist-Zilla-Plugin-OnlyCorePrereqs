@@ -35,6 +35,8 @@
             "Test::CPAN::Changes" : "0.19",
             "Test::CPAN::Meta" : "0",
             "Test::Kwalitee" : "1.08",
+            "Test::More" : "0",
+            "Test::NoTabs" : "0",
             "Test::Pod" : "1.41",
             "Test::Pod::Coverage" : "1.08"
          }
@@ -42,6 +44,9 @@
       "runtime" : {
          "requires" : {
             "Dist::Zilla::Role::AfterBuild" : "0",
+            "Encode" : "0",
+            "HTTP::Tiny" : "0",
+            "JSON" : "0",
             "Module::CoreList" : "2.77",
             "Moose" : "0",
             "Moose::Util::TypeConstraints" : "0",
@@ -49,6 +54,7 @@
             "namespace::autoclean" : "0",
             "perl" : "5.010",
             "strict" : "0",
+            "version" : "0",
             "warnings" : "0"
          }
       },
@@ -57,6 +63,7 @@
             "CPAN::Meta::Check" : "0.007",
             "IO::Handle" : "0",
             "IPC::Open3" : "0",
+            "Moose::Util" : "0",
             "Test::CheckDeps" : "0.006",
             "Test::DZil" : "0",
             "Test::Deep" : "0",
@@ -69,7 +76,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::OnlyCorePrereqs" : {
          "file" : "lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm",
-         "version" : "0.006"
+         "version" : "0.007"
       }
    },
    "release_status" : "stable",
@@ -85,7 +92,7 @@
          "web" : "https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs"
       }
    },
-   "version" : "0.006",
+   "version" : "0.007",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.019003"
@@ -99,12 +106,12 @@
          {
             "class" : "Dist::Zilla::Plugin::PromptIfStale",
             "name" : "@Author::ETHER/build",
-            "version" : "0.004"
+            "version" : "0.005"
          },
          {
             "class" : "Dist::Zilla::Plugin::PromptIfStale",
             "name" : "@Author::ETHER/release",
-            "version" : "0.004"
+            "version" : "0.005"
          },
          {
             "class" : "Dist::Zilla::Plugin::ExecDir",
@@ -165,7 +172,7 @@
                }
             },
             "name" : "@Author::ETHER/Test::Compile",
-            "version" : "2.029"
+            "version" : "2.030"
          },
          {
             "class" : "Dist::Zilla::Plugin::Test::CheckDeps",
@@ -174,8 +181,18 @@
          },
          {
             "class" : "Dist::Zilla::Plugin::NoTabsTests",
+            "config" : {
+               "Dist::Zilla::Plugin::Test::NoTabs" : {
+                  "module_finder" : [
+                     ":InstallModules"
+                  ],
+                  "script_finder" : [
+                     ":ExecFiles"
+                  ]
+               }
+            },
             "name" : "@Author::ETHER/NoTabsTests",
-            "version" : "0.01"
+            "version" : "0.02"
          },
          {
             "class" : "Dist::Zilla::Plugin::EOLTests",
