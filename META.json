@@ -30,7 +30,7 @@
          "requires" : {
             "Dist::Zilla" : "4.300038",
             "Dist::Zilla::Plugin::ModuleBuildTiny" : "0.004",
-            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.023",
+            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.019",
             "Pod::Coverage::TrustPod" : "0",
             "Test::CPAN::Changes" : "0.19",
             "Test::CPAN::Meta" : "0",
@@ -60,11 +60,10 @@
       },
       "test" : {
          "requires" : {
-            "CPAN::Meta::Check" : "0.007",
             "IO::Handle" : "0",
             "IPC::Open3" : "0",
             "Moose::Util" : "0",
-            "Test::CheckDeps" : "0.006",
+            "Test::CheckDeps" : "0.007",
             "Test::DZil" : "0",
             "Test::Deep" : "0",
             "Test::Fatal" : "0",
@@ -76,7 +75,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::OnlyCorePrereqs" : {
          "file" : "lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm",
-         "version" : "0.007"
+         "version" : "0.008"
       }
    },
    "release_status" : "stable",
@@ -92,7 +91,7 @@
          "web" : "https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs"
       }
    },
-   "version" : "0.007",
+   "version" : "0.008",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.019003"
@@ -177,21 +176,22 @@
          {
             "class" : "Dist::Zilla::Plugin::Test::CheckDeps",
             "name" : "@Author::ETHER/Test::CheckDeps",
-            "version" : "0.007"
+            "version" : "0.008"
          },
          {
-            "class" : "Dist::Zilla::Plugin::NoTabsTests",
+            "class" : "Dist::Zilla::Plugin::Test::NoTabs",
             "config" : {
                "Dist::Zilla::Plugin::Test::NoTabs" : {
                   "module_finder" : [
                      ":InstallModules"
                   ],
                   "script_finder" : [
-                     ":ExecFiles"
+                     ":ExecFiles",
+                     "@Author::ETHER/Examples"
                   ]
                }
             },
-            "name" : "@Author::ETHER/NoTabsTests",
+            "name" : "@Author::ETHER/Test::NoTabs",
             "version" : "0.02"
          },
          {
@@ -328,17 +328,6 @@
             "class" : "Dist::Zilla::Plugin::MinimumPerl",
             "name" : "@Author::ETHER/MinimumPerl",
             "version" : "1.003"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::Prereqs",
-            "config" : {
-               "Dist::Zilla::Plugin::Prereqs" : {
-                  "phase" : "test",
-                  "type" : "requires"
-               }
-            },
-            "name" : "@Author::ETHER/Test::CheckDeps, indirect",
-            "version" : "4.300038"
          },
          {
             "class" : "Dist::Zilla::Plugin::Prereqs",

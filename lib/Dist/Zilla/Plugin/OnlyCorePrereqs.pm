@@ -5,9 +5,9 @@ BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.007';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.008';
 }
-# git description: v0.006-5-g4f88f68
+# git description: v0.007-4-g9958a30
 
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
@@ -45,11 +45,6 @@ has starting_version => (
 has deprecated_ok => (
     is => 'ro', isa => 'Bool',
     default => 0,
-);
-
-has check_module_versions => (
-    is => 'ro', isa => 'Bool',
-    default => 1,
 );
 
 has check_dual_life_versions => (
@@ -111,8 +106,7 @@ sub after_build
                 next;
             }
 
-            if ($self->check_module_versions
-                and ($self->check_dual_life_versions or not $self->_is_dual($prereq)))
+            if ($self->check_dual_life_versions or not $self->_is_dual($prereq))
             {
                 my $has = $Module::CoreList::version{$self->starting_version->numify}{$prereq};
                 $has = version->parse($has);    # version.pm XS hates tie() - RT#87983
@@ -161,7 +155,7 @@ sub _is_dual
 
     my $upstream = $Module::CoreList::upstream{$module};
     $self->log_debug($module . ' is upstream=' . ($upstream // 'undef'));
-    return 1 if $upstream eq 'cpan' or $upstream eq 'first-come';
+    return 1 if defined $upstream and ($upstream eq 'cpan' or $upstream eq 'first-come');
 
     # if upstream=blead, we can't be sure if it's actually dual or not, so for
     # now we'll have to ask the index and hope that there's been a release to
@@ -188,7 +182,7 @@ sub _indexed_dist
 
     $self->log_debug('invalid payload returned?'), return undef unless $payload;
     $self->log_debug($module . ' not indexed'), return undef if not defined $payload->[0]{dist_name};
-    version->parse($payload->[0]{dist_name});
+    return $payload->[0]{dist_name};
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -207,7 +201,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 
@@ -268,18 +262,13 @@ determining the version of the latest Perl release.)
 A boolean flag indicating whether it is considered acceptable to depend on a
 deprecated module. Defaults to 0.
 
-=item * C<check_module_versions>
-
-A boolean flag indicating whether the specific module version available in the
-C<starting_version> of perl should also be checked.  Defaults to 1. (perhaps
-not that useful, compared to check_dual_life_versions - might be removed
-shortly?)
-
 =item * C<check_dual_life_versions>
 
-Like C<check_module_versions>, but only applies to modules that are
-dual-lifed (are distributed on the CPAN as well as in core). Defaults to 1.
-This is useful to set if you don't want to fail if you require a core module
+A boolean flag indicating whether the specific module version available in the
+C<starting_version> of perl be checked (even) if the module is dual-lifed.
+Defaults to 1.
+
+This is useful to B<unset> if you don't want to fail if you require a core module
 that the user can still upgrade via the CPAN, but do want to fail if the
 module is B<only> available in core.
 
@@ -291,8 +280,9 @@ This is hopefully going to be rectified soon (when I add the necessary feature
 to L<Module::CoreList>).
 
 (For example, a prerequisite of L<Test::More> 0.88 at C<starting_version>
-5.010 would fail with C<check_module_versions> or C<check_dual_life_versions> set, as the version of
-L<Test::More> that shipped with that version of perl was only 0.72.
+5.010 would fail with C<check_dual_life_versions = 1>, as the version of
+L<Test::More> that shipped with that version of perl was only 0.72,
+but not fail if C<check_dual_life_versions = 0>.
 
 =back
 
