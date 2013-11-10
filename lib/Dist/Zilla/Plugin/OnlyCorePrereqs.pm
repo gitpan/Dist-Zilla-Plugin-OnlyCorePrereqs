@@ -1,17 +1,16 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
+{
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.009'; # TRIAL
+}
+# git description: v0.008-8-g16a6470
+
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
-{
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.008';
-}
-# git description: v0.007-4-g9958a30
-
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 
-use 5.010;
 use Moose;
 with 'Dist::Zilla::Role::AfterBuild';
 use Moose::Util::TypeConstraints;
@@ -114,7 +113,7 @@ sub after_build
 
                 if ($has < $wanted)
                 {
-                    push @insufficient_version, [ map { "$_" } $phase, $prereq, $wanted, $self->starting_version, $has ];
+                    push @insufficient_version, [ map { "$_" } $phase, $prereq, $wanted, $self->starting_version->numify, $has ];
                     next;
                 }
             }
@@ -157,9 +156,9 @@ sub _is_dual
     $self->log_debug($module . ' is upstream=' . ($upstream // 'undef'));
     return 1 if defined $upstream and ($upstream eq 'cpan' or $upstream eq 'first-come');
 
-    # if upstream=blead, we can't be sure if it's actually dual or not, so for
-    # now we'll have to ask the index and hope that there's been a release to
-    # cpan since the last stable perl release.
+    # if upstream=blead or =undef, we can't be sure if it's actually dual or
+    # not, so for now we'll have to ask the index and hope that there's been a
+    # release to cpan since the last stable perl release.
     my $dist_name = $self->_indexed_dist($module);
     $self->log_debug($module . ' is indexed in the ' . ($dist_name // 'undef') . ' dist');
     return 0 if not defined $dist_name or $dist_name eq 'perl';
@@ -191,7 +190,7 @@ __END__
 
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =for :stopwords Karen Etheridge David Golden lifed blead irc
 
@@ -201,7 +200,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 
