@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.009'; # TRIAL
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.010'; # TRIAL
 }
-# git description: v0.008-8-g16a6470
+# git description: v0.009-TRIAL-1-g3d6a536
 
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
@@ -200,7 +200,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
