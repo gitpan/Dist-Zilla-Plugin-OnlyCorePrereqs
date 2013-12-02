@@ -17,6 +17,8 @@ t/02-deprecated.t
 t/03-specific-version.t
 t/04-no-check-module-versions.t
 t/05-check-dual-life-versions.t
+t/06-phases.t
+t/07-skip.t
 weaver.ini
 xt/author/00-compile.t
 xt/author/pod-spell.t

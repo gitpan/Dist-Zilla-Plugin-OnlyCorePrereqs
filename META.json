@@ -93,7 +93,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::OnlyCorePrereqs" : {
          "file" : "lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm",
-         "version" : "0.011"
+         "version" : "0.012"
       }
    },
    "release_status" : "stable",
@@ -111,7 +111,7 @@
       "x_IRC" : "irc://irc.perl.org/#distzilla",
       "x_MailingList" : "http://dzil.org/#mailing-list"
    },
-   "version" : "0.011",
+   "version" : "0.012",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.019006"

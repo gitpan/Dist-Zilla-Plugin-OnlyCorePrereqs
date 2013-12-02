@@ -30,7 +30,7 @@ no_index:
 provides:
   Dist::Zilla::Plugin::OnlyCorePrereqs:
     file: lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
-    version: 0.011
+    version: 0.012
 requires:
   Dist::Zilla::Role::AfterBuild: 0
   Encode: 0
@@ -51,7 +51,7 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-OnlyCorePrereqs
   homepage: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs
   repository: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs.git
-version: 0.011
+version: 0.012
 x_Dist_Zilla:
   perl:
     version: 5.019006
