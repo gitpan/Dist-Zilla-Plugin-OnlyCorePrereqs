@@ -16,7 +16,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.30
   Module::Build::Tiny: 0.030
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.132830'
+generated_by: 'Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.133380'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -30,7 +30,7 @@ no_index:
 provides:
   Dist::Zilla::Plugin::OnlyCorePrereqs:
     file: lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
-    version: 0.012
+    version: 0.013
 requires:
   Dist::Zilla::Role::AfterBuild: 0
   Encode: 0
@@ -51,7 +51,7 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-OnlyCorePrereqs
   homepage: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs
   repository: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs.git
-version: 0.012
+version: 0.013
 x_Dist_Zilla:
   perl:
     version: 5.019006
@@ -69,7 +69,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::Git::NextVersion
       name: '@Author::ETHER/Git::NextVersion'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::PromptIfStale
       config:
@@ -81,7 +81,7 @@ x_Dist_Zilla:
           phase: build
           skip: []
       name: '@Author::ETHER/build'
-      version: 0.014
+      version: 0.015
     -
       class: Dist::Zilla::Plugin::PromptIfStale
       config:
@@ -90,16 +90,9 @@ x_Dist_Zilla:
           check_all_prereqs: 1
           modules: []
           phase: release
-          skip:
-            - Dist::Zilla::Plugin::Git::Check
-            - Dist::Zilla::Plugin::Git::Commit
-            - Dist::Zilla::Plugin::Git::GatherDir
-            - Dist::Zilla::Plugin::Git::NextVersion
-            - Dist::Zilla::Plugin::Git::Push
-            - Dist::Zilla::Plugin::Git::Tag
-            - Dist::Zilla::Plugin::Git::Init
+          skip: []
       name: '@Author::ETHER/release'
-      version: 0.014
+      version: 0.015
     -
       class: Dist::Zilla::Plugin::ExecDir
       name: '@Author::ETHER/ExecDir'
@@ -115,7 +108,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::Git::GatherDir
       name: '@Author::ETHER/Git::GatherDir'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::MetaYAML
       name: '@Author::ETHER/MetaYAML'
@@ -145,7 +138,7 @@ x_Dist_Zilla:
           encoding: UTF-8
           source_filename: CONTRIBUTING
       name: '@Author::ETHER/GenerateFile::ShareDir'
-      version: 0.002
+      version: 0.003
     -
       class: Dist::Zilla::Plugin::Test::Compile
       config:
@@ -157,7 +150,7 @@ x_Dist_Zilla:
             - ':ExecFiles'
             - '@Author::ETHER/Examples'
       name: '@Author::ETHER/Test::Compile'
-      version: 2.038
+      version: 2.039
     -
       class: Dist::Zilla::Plugin::Test::NoTabs
       config:
@@ -332,7 +325,7 @@ x_Dist_Zilla:
             -
               class: Pod::Weaver::Section::Contributors
               name: Contributors
-              version: 0.006
+              version: 0.007
       name: '@Author::ETHER/PodWeaver'
       version: 4.002
     -
@@ -342,7 +335,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::ReadmeAnyFromPod
       name: '@Author::ETHER/ReadmeAnyFromPod'
-      version: 0.133290
+      version: 0.133360
     -
       class: Dist::Zilla::Plugin::GithubMeta
       name: '@Author::ETHER/GithubMeta'
@@ -408,7 +401,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::MakeMaker::Fallback
       name: '@Author::ETHER/MakeMaker::Fallback'
-      version: 0.004
+      version: 0.005
     -
       class: Dist::Zilla::Plugin::ModuleBuildTiny
       name: '@Author::ETHER/ModuleBuildTiny'
@@ -420,7 +413,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::CheckSelfDependency
       name: '@Author::ETHER/CheckSelfDependency'
-      version: 0.005
+      version: 0.006
     -
       class: Dist::Zilla::Plugin::Run::AfterBuild
       name: '@Author::ETHER/Run::AfterBuild'
@@ -428,7 +421,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::Git::Check
       name: '@Author::ETHER/initial check'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::Git::CheckFor::MergeConflicts
       name: '@Author::ETHER/Git::CheckFor::MergeConflicts'
@@ -452,7 +445,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::Git::Check
       name: '@Author::ETHER/after tests'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::UploadToCPAN
       name: '@Author::ETHER/UploadToCPAN'
@@ -464,19 +457,19 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::Git::Commit
       name: '@Author::ETHER/Git::Commit'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::Git::Tag
       name: '@Author::ETHER/Git::Tag'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::GitHub::Update
       name: '@Author::ETHER/GitHub::Update'
-      version: 0.35
+      version: 0.36
     -
       class: Dist::Zilla::Plugin::Git::Push
       name: '@Author::ETHER/Git::Push'
-      version: 2.017
+      version: 2.019
     -
       class: Dist::Zilla::Plugin::InstallRelease
       name: '@Author::ETHER/InstallRelease'

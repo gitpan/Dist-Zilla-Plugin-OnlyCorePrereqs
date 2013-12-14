@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
 {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.012';
+  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.013';
 }
-# git description: v0.011-4-g88923ba
+# git description: v0.012-1-g198db7f
 
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
@@ -112,7 +112,8 @@ sub after_build
                 next;
             }
 
-            if (version->parse($added_in) > $self->starting_version)
+            if (version->parse($added_in) > $self->starting_version
+                and ($self->check_dual_life_versions or not $self->_is_dual($prereq)))
             {
                 push @not_yet, [$phase, $added_in, $prereq];
                 next;
@@ -214,7 +215,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.012
+version 0.013
 
 =head1 SYNOPSIS
 
