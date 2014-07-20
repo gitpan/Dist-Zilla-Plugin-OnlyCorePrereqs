@@ -1,25 +1,25 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
-{
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.013';
-}
-# git description: v0.012-1-g198db7f
-
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
+# git description: v0.013-16-g16ff326
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.014';
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
+# KEYWORDS: plugin distribution metadata prerequisites core
+# vim: set ts=8 sw=4 tw=78 et :
 
 use Moose;
 with 'Dist::Zilla::Role::AfterBuild';
 use Moose::Util::TypeConstraints;
-use Module::CoreList 2.77;
+use Module::CoreList 3.10;
 use MooseX::Types::Perl 0.101340 'LaxVersionStr';
 use version;
 use HTTP::Tiny;
 use Encode;
-use JSON;
+use JSON::MaybeXS;
+use CPAN::Meta::Requirements 2.121;
 use namespace::autoclean;
 
 has phases => (
@@ -38,7 +38,20 @@ has starting_version => (
         $version;
     },
     coerce => 1,
-    default => '5.005',
+    predicate => '_has_starting_version',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+
+        my $prereqs = $self->zilla->distmeta->{prereqs};
+        my @perl_prereqs = grep { defined } map { $prereqs->{$_}{requires}{perl} } keys %$prereqs;
+
+        return '5.005' if not @perl_prereqs;
+
+        my $req = CPAN::Meta::Requirements->new;
+        $req->add_minimum(perl => $_) foreach @perl_prereqs;
+        $req->requirements_for_module('perl');
+    },
 );
 
 has deprecated_ok => (
@@ -81,6 +94,22 @@ around BUILDARGS => sub
     }
 
     $args;
+};
+
+around dump_config => sub
+{
+    my $orig = shift;
+    my $self = shift;
+
+    my $config = $self->$orig;
+
+    $config->{+__PACKAGE__} = {
+        ( map { $_ => [ $self->$_ ] } qw(phases skips)),
+        ( map { $_ => $self->$_ } qw(deprecated_ok check_dual_life_versions)),
+        ( starting_version => ($self->_has_starting_version ? $self->starting_version : undef )),
+    };
+
+    return $config;
 };
 
 sub after_build
@@ -189,10 +218,9 @@ sub _indexed_dist
     my $res = HTTP::Tiny->new->get("http://cpanidx.org/cpanidx/json/mod/$module");
     $self->log_debug('could not query the index?'), return undef if not $res->{success};
 
-    # JSON wants UTF-8 bytestreams, so we need to re-encode no matter what
+    # decode_json wants UTF-8 bytestreams, so we need to re-encode no matter what
     # encoding we got. -- rjbs, 2011-08-18 (in Dist::Zilla)
-    my $json_octets = Encode::encode_utf8($res->{content});
-    my $payload = JSON::->new->decode($json_octets);
+    my $payload = decode_json(Encode::encode_utf8($res->{content}));
 
     $self->log_debug('invalid payload returned?'), return undef unless $payload;
     $self->log_debug($module . ' not indexed'), return undef if not defined $payload->[0]{dist_name};
@@ -207,15 +235,13 @@ __END__
 
 =encoding UTF-8
 
-=for :stopwords Karen Etheridge David Golden lifed blead irc
-
 =head1 NAME
 
 Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared that are not part of core
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
@@ -253,7 +279,8 @@ this plugin twice, with different names.
 
 Indicates the first Perl version that should be checked against; any versions
 earlier than this are not considered significant for the purposes of core
-checks.  Defaults to C<5.005>.
+checks.  Defaults to the minimum version of perl declared in the distribution's
+prerequisites, or C<5.005>.
 
 There are two special values supported:
 
@@ -277,6 +304,8 @@ A boolean flag indicating whether it is considered acceptable to depend on a
 deprecated module. Defaults to 0.
 
 =item * C<check_dual_life_versions>
+
+=for stopwords lifed blead
 
 A boolean flag indicating whether the specific module version available in the
 C<starting_version> of perl be checked (even) if the module is dual-lifed.
@@ -305,6 +334,8 @@ The name of a module to exempt from checking. Can be used more than once.
 =back
 
 =head1 SUPPORT
+
+=for stopwords irc
 
 Bugs may be submitted through L<the RT bug tracker|https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-OnlyCorePrereqs>
 (or L<bug-Dist-Zilla-Plugin-OnlyCorePrereqs@rt.cpan.org|mailto:bug-Dist-Zilla-Plugin-OnlyCorePrereqs@rt.cpan.org>).

@@ -6,13 +6,14 @@ use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 use Test::Fatal;
 use Test::Deep;
 use Test::DZil;
+use Path::Tiny;
 
 {
     my $tzil = Builder->from_config(
         { dist_root => 't/does_not_exist' },
         {
             add_files => {
-                'source/dist.ini' => simple_ini(
+                path(qw(source dist.ini)) => simple_ini(
                     [ Prereqs => RuntimeRequires => { Moose => 0 } ],
                     [ OnlyCorePrereqs => ],
                 ),
@@ -32,8 +33,7 @@ use Test::DZil;
         $tzil->log_messages,
         supersetof('[OnlyCorePrereqs] detected a runtime requires dependency that is not in core: Moose'),
         'Moose is not in core - check fails',
-    )
-    or diag explain $tzil->log_messages;
+    ) or diag 'saw log messages: ', explain $tzil->log_messages;
 }
 
 {
@@ -41,7 +41,7 @@ use Test::DZil;
         { dist_root => 't/does_not_exist' },
         {
             add_files => {
-                'source/dist.ini' => simple_ini(
+                path(qw(source dist.ini)) => simple_ini(
                     [ Prereqs => RuntimeRequires => { parent => 0 } ],
                     [ OnlyCorePrereqs => { starting_version => '5.010' } ],
                 ),
@@ -61,8 +61,7 @@ use Test::DZil;
         $tzil->log_messages,
         supersetof('[OnlyCorePrereqs] detected a runtime requires dependency that was not added to core until 5.010001: parent'),
         'parent was not in core in 5.10 - check fails',
-    )
-    or diag explain $tzil->log_messages;
+    ) or diag 'saw log messages: ', explain $tzil->log_messages;
 }
 
 {
@@ -70,7 +69,7 @@ use Test::DZil;
         { dist_root => 't/does_not_exist' },
         {
             add_files => {
-                'source/dist.ini' => simple_ini(
+                path(qw(source dist.ini)) => simple_ini(
                     [ Prereqs => { perl => '5.010' } ],
                     [ Prereqs => TestRequires => { parent => 0 } ],
                     [ OnlyCorePrereqs => { starting_version => '5.010', phase => [ 'runtime' ] } ],
@@ -90,8 +89,7 @@ use Test::DZil;
     ok(
         (!grep { /\[OnlyCorePrereqs\]/ } @{$tzil->log_messages}),
         'non-core modules are permitted in the test phase',
-    )
-    or diag explain $tzil->log_messages;
+    ) or diag 'saw log messages: ', explain $tzil->log_messages;
 }
 
 done_testing;
