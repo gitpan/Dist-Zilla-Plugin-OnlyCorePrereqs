@@ -100,12 +100,11 @@ my %WriteMakefileArgs = (
     "Scalar::Util" => 0,
     "Test::DZil" => 0,
     "Test::Deep" => 0,
-    "Test::Deep::JSON" => 0,
     "Test::Fatal" => 0,
     "Test::More" => 0,
     "if" => 0
   },
-  "VERSION" => "0.015",
+  "VERSION" => "0.016",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -130,7 +129,6 @@ my %FallbackPrereqs = (
   "Scalar::Util" => 0,
   "Test::DZil" => 0,
   "Test::Deep" => 0,
-  "Test::Deep::JSON" => 0,
   "Test::Fatal" => 0,
   "Test::More" => 0,
   "if" => 0,

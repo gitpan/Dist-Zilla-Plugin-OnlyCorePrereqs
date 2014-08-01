@@ -64,7 +64,7 @@ EOW
         "Karen Etheridge <ether\@cpan.org>"
       ],
       "dist_name" => "Dist-Zilla-Plugin-OnlyCorePrereqs",
-      "dist_version" => "0.015",
+      "dist_version" => "0.016",
       "license" => "perl",
       "module_name" => "Dist::Zilla::Plugin::OnlyCorePrereqs",
       "recommends" => {},
@@ -95,7 +95,6 @@ EOW
         "Scalar::Util" => 0,
         "Test::DZil" => 0,
         "Test::Deep" => 0,
-        "Test::Deep::JSON" => 0,
         "Test::Fatal" => 0,
         "Test::More" => 0,
         "if" => 0
@@ -112,7 +111,6 @@ EOW
       "Scalar::Util" => 0,
       "Test::DZil" => 0,
       "Test::Deep" => 0,
-      "Test::Deep::JSON" => 0,
       "Test::Fatal" => 0,
       "Test::More" => 0,
       "if" => 0

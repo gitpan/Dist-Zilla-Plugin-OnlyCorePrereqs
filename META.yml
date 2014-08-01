@@ -11,7 +11,6 @@ build_requires:
   Scalar::Util: '0'
   Test::DZil: '0'
   Test::Deep: '0'
-  Test::Deep::JSON: '0'
   Test::Fatal: '0'
   Test::More: '0'
   if: '0'
@@ -38,7 +37,7 @@ no_index:
 provides:
   Dist::Zilla::Plugin::OnlyCorePrereqs:
     file: lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
-    version: '0.015'
+    version: '0.016'
 requires:
   CPAN::Meta::Requirements: '2.121'
   Dist::Zilla::Plugin::MetaResources: '4.300039'
@@ -60,7 +59,7 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-OnlyCorePrereqs
   homepage: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs
   repository: https://github.com/karenetheridge/Dist-Zilla-Plugin-OnlyCorePrereqs.git
-version: '0.015'
+version: '0.016'
 x_Dist_Zilla:
   perl:
     version: '5.021001'
@@ -536,7 +535,7 @@ x_Dist_Zilla:
         Dist::Zilla::Plugin::Git::Tag:
           branch: ~
           signed: 0
-          tag: v0.015
+          tag: v0.016
           tag_format: v%v%t
           tag_message: v%v%t
           time_zone: local

@@ -4,8 +4,8 @@ package Dist::Zilla::Plugin::OnlyCorePrereqs;
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
-# git description: v0.014-5-g1a868b2
-$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.015';
+# git description: v0.015-3-gc447c59
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.016';
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
@@ -37,6 +37,7 @@ has starting_version => (
         $version;
     },
     coerce => 1,
+    predicate => '_has_starting_version',
     lazy => 1,
     default => sub {
         my $self = shift;
@@ -99,14 +100,13 @@ around BUILDARGS => sub
 
 around dump_config => sub
 {
-    my $orig = shift;
-    my $self = shift;
-
+    my ($orig, $self) = @_;
     my $config = $self->$orig;
 
     $config->{+__PACKAGE__} = {
         ( map { $_ => [ $self->$_ ] } qw(phases skips)),
-        ( map { $_ => $self->$_ } qw(deprecated_ok check_dual_life_versions starting_version)),
+        ( map { $_ => $self->$_ } qw(deprecated_ok check_dual_life_versions)),
+        ( starting_version => ($self->_has_starting_version ? $self->starting_version : 'to be determined from perl prereq')),
     };
 
     return $config;
@@ -239,7 +239,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
