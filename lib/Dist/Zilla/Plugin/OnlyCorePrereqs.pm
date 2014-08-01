@@ -4,8 +4,8 @@ package Dist::Zilla::Plugin::OnlyCorePrereqs;
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
-# git description: v0.013-16-g16ff326
-$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.014';
+# git description: v0.014-5-g1a868b2
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.015';
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
@@ -17,7 +17,6 @@ use Module::CoreList 3.10;
 use MooseX::Types::Perl 0.101340 'LaxVersionStr';
 use version;
 use HTTP::Tiny;
-use Encode;
 use JSON::MaybeXS;
 use CPAN::Meta::Requirements 2.121;
 use namespace::autoclean;
@@ -38,7 +37,6 @@ has starting_version => (
         $version;
     },
     coerce => 1,
-    predicate => '_has_starting_version',
     lazy => 1,
     default => sub {
         my $self = shift;
@@ -67,7 +65,10 @@ has check_dual_life_versions => (
 has skips => (
     isa => 'ArrayRef[Str]',
     traits => ['Array'],
-    handles => { skip_module => 'grep' },
+    handles => {
+        skips => 'elements',
+        skip_module => 'grep',
+    },
     lazy => 1,
     default => sub { [] },
 );
@@ -105,8 +106,7 @@ around dump_config => sub
 
     $config->{+__PACKAGE__} = {
         ( map { $_ => [ $self->$_ ] } qw(phases skips)),
-        ( map { $_ => $self->$_ } qw(deprecated_ok check_dual_life_versions)),
-        ( starting_version => ($self->_has_starting_version ? $self->starting_version : undef )),
+        ( map { $_ => $self->$_ } qw(deprecated_ok check_dual_life_versions starting_version)),
     };
 
     return $config;
@@ -218,9 +218,7 @@ sub _indexed_dist
     my $res = HTTP::Tiny->new->get("http://cpanidx.org/cpanidx/json/mod/$module");
     $self->log_debug('could not query the index?'), return undef if not $res->{success};
 
-    # decode_json wants UTF-8 bytestreams, so we need to re-encode no matter what
-    # encoding we got. -- rjbs, 2011-08-18 (in Dist::Zilla)
-    my $payload = decode_json(Encode::encode_utf8($res->{content}));
+    my $payload = JSON::MaybeXS->new(utf8 => 0)->decode($res->{content});
 
     $self->log_debug('invalid payload returned?'), return undef unless $payload;
     $self->log_debug($module . ' not indexed'), return undef if not defined $payload->[0]{dist_name};
@@ -241,7 +239,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 
@@ -264,9 +262,7 @@ If the check fails, the build is aborted.
 
 =head1 OPTIONS
 
-=over 4
-
-=item * C<phase>
+=head2 C<phase>
 
 Indicates a phase to check against. Can be provided more than once; defaults
 to C<configure>, C<build>, C<runtime>, C<test>.  (See L<Dist::Zilla::Plugin::Prereqs> for more
@@ -275,7 +271,7 @@ information about phases.)
 Remember that you can use different settings for different phases by employing
 this plugin twice, with different names.
 
-=item * C<starting_version>
+=head2 C<starting_version>
 
 Indicates the first Perl version that should be checked against; any versions
 earlier than this are not considered significant for the purposes of core
@@ -298,12 +294,12 @@ You can guarantee you are always running the latest version with
 L<Dist::Zilla::Plugin::PromptIfStale>. L<Module::CoreList> is also the mechanism used for
 determining the version of the latest Perl release.)
 
-=item * C<deprecated_ok>
+=head2 C<deprecated_ok>
 
 A boolean flag indicating whether it is considered acceptable to depend on a
 deprecated module. Defaults to 0.
 
-=item * C<check_dual_life_versions>
+=head2 C<check_dual_life_versions>
 
 =for stopwords lifed blead
 
@@ -327,11 +323,9 @@ to L<Module::CoreList>).
 L<Test::More> that shipped with that version of perl was only 0.72,
 but not fail if C<check_dual_life_versions = 0>.
 
-=item * C<skip>
+=head2 C<skip>
 
 The name of a module to exempt from checking. Can be used more than once.
-
-=back
 
 =head1 SUPPORT
 

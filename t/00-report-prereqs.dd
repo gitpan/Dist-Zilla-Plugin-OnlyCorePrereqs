@@ -1,13 +1,13 @@
 do { my $x = {
        'configure' => {
                         'requires' => {
-                                        'ExtUtils::MakeMaker' => '6.30',
-                                        'Module::Build::Tiny' => '0.036'
+                                        'ExtUtils::MakeMaker' => '0',
+                                        'Module::Build::Tiny' => '0.037'
                                       }
                       },
        'develop' => {
                       'recommends' => {
-                                        'Dist::Zilla::PluginBundle::Author::ETHER' => '0.066'
+                                        'Dist::Zilla::PluginBundle::Author::ETHER' => '0.067'
                                       },
                       'requires' => {
                                       'Dist::Zilla' => '5',
@@ -54,7 +54,6 @@ do { my $x = {
                                       'CPAN::Meta::Requirements' => '2.121',
                                       'Dist::Zilla::Plugin::MetaResources' => '4.300039',
                                       'Dist::Zilla::Role::AfterBuild' => '0',
-                                      'Encode' => '0',
                                       'HTTP::Tiny' => '0',
                                       'JSON::MaybeXS' => '0',
                                       'Module::CoreList' => '3.10',
@@ -64,30 +63,27 @@ do { my $x = {
                                       'namespace::autoclean' => '0',
                                       'perl' => '5.010',
                                       'strict' => '0',
-                                      'version' => '0.77',
+                                      'version' => '0',
                                       'warnings' => '0'
                                     }
                     },
        'test' => {
                    'recommends' => {
-                                     'CPAN::Meta' => '0',
-                                     'CPAN::Meta::Prereqs' => '0',
-                                     'CPAN::Meta::Requirements' => '2.120900'
+                                     'CPAN::Meta' => '2.120900'
                                    },
                    'requires' => {
                                    'ExtUtils::MakeMaker' => '0',
                                    'File::Spec' => '0',
-                                   'File::Spec::Functions' => '0',
                                    'List::Util' => '0',
                                    'Moose::Util' => '0',
                                    'Path::Tiny' => '0',
                                    'Scalar::Util' => '0',
                                    'Test::DZil' => '0',
                                    'Test::Deep' => '0',
+                                   'Test::Deep::JSON' => '0',
                                    'Test::Fatal' => '0',
                                    'Test::More' => '0',
-                                   'if' => '0',
-                                   'version' => '0.77'
+                                   'if' => '0'
                                  }
                  }
      };
