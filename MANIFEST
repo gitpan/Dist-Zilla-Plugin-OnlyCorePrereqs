@@ -9,7 +9,6 @@ META.json
 META.yml
 Makefile.PL
 README
-README.pod
 dist.ini
 lib/Dist/Zilla/Plugin/OnlyCorePrereqs.pm
 t/00-report-prereqs.dd

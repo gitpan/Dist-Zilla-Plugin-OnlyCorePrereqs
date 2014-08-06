@@ -4,8 +4,8 @@ package Dist::Zilla::Plugin::OnlyCorePrereqs;
 BEGIN {
   $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
 }
-# git description: v0.015-3-gc447c59
-$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.016';
+# git description: v0.016-3-g5fd7cce
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.017';
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
@@ -239,7 +239,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 
@@ -347,6 +347,8 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =head1 CONTRIBUTOR
+
+=for stopwords David Golden
 
 David Golden <dagolden@cpan.org>
 
