@@ -1,11 +1,8 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
-BEGIN {
-  $Dist::Zilla::Plugin::OnlyCorePrereqs::AUTHORITY = 'cpan:ETHER';
-}
-# git description: v0.016-3-g5fd7cce
-$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.017';
+# git description: v0.017-4-gdc57432
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.018';
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
@@ -16,8 +13,10 @@ use Moose::Util::TypeConstraints;
 use Module::CoreList 3.10;
 use MooseX::Types::Perl 0.101340 'LaxVersionStr';
 use version;
+use Encode;
 use HTTP::Tiny;
-use JSON::MaybeXS;
+use YAML::Tiny;
+use CPAN::DistnameInfo;
 use CPAN::Meta::Requirements 2.121;
 use namespace::autoclean;
 
@@ -128,11 +127,11 @@ sub after_build
             next if $prereq eq 'perl';
 
             if ($self->skip_module(sub { $_ eq $prereq })) {
-                $self->log_debug("skipping $prereq");
+                $self->log_debug([ 'skipping %s', $prereq ]);
                 next;
             }
 
-            $self->log_debug("checking $prereq");
+            $self->log_debug([ 'checking %s', $prereq ]);
             my $added_in = Module::CoreList->first_release($prereq);
 
             if (not defined $added_in)
@@ -196,7 +195,7 @@ sub _is_dual
     my ($self, $module) = @_;
 
     my $upstream = $Module::CoreList::upstream{$module};
-    $self->log_debug($module . ' is upstream=' . ($upstream // 'undef'));
+    $self->log_debug([ '%s is upstream=%s', $module, sub { $upstream // 'undef' } ]);
     return 1 if defined $upstream and ($upstream eq 'cpan' or $upstream eq 'first-come');
 
     # if upstream=blead or =undef, we can't be sure if it's actually dual or
@@ -204,7 +203,7 @@ sub _is_dual
     # 'no_index' entries in the last perl release were complete.
     # TODO: keep checking Module::CoreList for fixes.
     my $dist_name = $self->_indexed_dist($module);
-    $self->log_debug($module . ' is indexed in the ' . ($dist_name // 'undef') . ' dist');
+    $self->log_debug([ '%s is indexed in the %s dist', $module, sub { $dist_name // 'undef' } ]);
     return 0 if not defined $dist_name or $dist_name eq 'perl';
     return 1;
 }
@@ -215,14 +214,25 @@ sub _indexed_dist
 {
     my ($self, $module) = @_;
 
-    my $res = HTTP::Tiny->new->get("http://cpanidx.org/cpanidx/json/mod/$module");
+    my $url = 'http://cpanmetadb.plackperl.org/v1.0/package/' . $module;
+    $self->log_debug([ 'fetching %s', $url ]);
+    my $res = HTTP::Tiny->new->get($url);
     $self->log_debug('could not query the index?'), return undef if not $res->{success};
 
-    my $payload = JSON::MaybeXS->new(utf8 => 0)->decode($res->{content});
+    my $data = $res->{content};
+
+    require HTTP::Headers;
+    if (my $charset = HTTP::Headers->new(%{ $res->{headers} })->content_type_charset)
+    {
+        $data = Encode::decode($charset, $data, Encode::FB_CROAK);
+    }
+    $self->log_debug([ 'got response: %s', $data ]);
+
+    my $payload = YAML::Tiny->read_string($data);
 
     $self->log_debug('invalid payload returned?'), return undef unless $payload;
-    $self->log_debug($module . ' not indexed'), return undef if not defined $payload->[0]{dist_name};
-    return $payload->[0]{dist_name};
+    $self->log_debug([ '%s not indexed', $module ]), return undef if not defined $payload->[0]{dist_name};
+    return CPAN::DistnameInfo->new($payload->[0]{dist_name})->dist;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -239,7 +249,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.017
+version 0.018
 
 =head1 SYNOPSIS
 
