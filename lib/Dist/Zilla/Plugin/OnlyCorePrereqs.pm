@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::OnlyCorePrereqs;
-# git description: v0.017-4-gdc57432
-$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.018';
+# git description: v0.018-4-g34f66d4
+{ our $VERSION = '0.019'; }
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
@@ -190,6 +190,7 @@ sub after_build
 
 # this will get easier if we can just ask MCL for this information, rather
 # than guessing.
+# returns undef if not indexed, otherwise true/false.
 sub _is_dual
 {
     my ($self, $module) = @_;
@@ -203,9 +204,20 @@ sub _is_dual
     # 'no_index' entries in the last perl release were complete.
     # TODO: keep checking Module::CoreList for fixes.
     my $dist_name = $self->_indexed_dist($module);
-    $self->log_debug([ '%s is indexed in the %s dist', $module, sub { $dist_name // 'undef' } ]);
-    return 0 if not defined $dist_name or $dist_name eq 'perl';
-    return 1;
+    $self->log([ 'Warning: %s not indexed?!', $module ]), return undef if not defined $dist_name;
+
+    $self->log_debug([ '%s is indexed in the %s dist', $module, $dist_name ]);
+    return $dist_name eq 'perl' ? 0 : 1;
+}
+{
+    my %is_dual;
+    around _is_dual => sub {
+        my $orig = shift;
+        my ($self, $module) = @_;
+
+        return $is_dual{$module} if exists $is_dual{$module};
+        $is_dual{$module} = $self->$orig($module);
+    };
 }
 
 
@@ -226,13 +238,13 @@ sub _indexed_dist
     {
         $data = Encode::decode($charset, $data, Encode::FB_CROAK);
     }
-    $self->log_debug([ 'got response: %s', $data ]);
+    $self->log_debug([ 'got response: %s', sub { chomp $data; $data } ]);
 
     my $payload = YAML::Tiny->read_string($data);
 
     $self->log_debug('invalid payload returned?'), return undef unless $payload;
-    $self->log_debug([ '%s not indexed', $module ]), return undef if not defined $payload->[0]{dist_name};
-    return CPAN::DistnameInfo->new($payload->[0]{dist_name})->dist;
+    $self->log_debug([ '%s not indexed', $module ]), return undef if not defined $payload->[0]{distfile};
+    return CPAN::DistnameInfo->new($payload->[0]{distfile})->dist;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -249,7 +261,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.018
+version 0.019
 
 =head1 SYNOPSIS
 
