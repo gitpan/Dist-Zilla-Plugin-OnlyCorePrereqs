@@ -1,7 +1,7 @@
 
 
 This archive contains the distribution Dist-Zilla-Plugin-OnlyCorePrereqs,
-version 0.019:
+version 0.020:
 
   Check that no prerequisites are declared that are not part of core
 

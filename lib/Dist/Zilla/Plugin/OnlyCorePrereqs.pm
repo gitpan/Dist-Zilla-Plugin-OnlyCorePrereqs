@@ -1,12 +1,10 @@
 use strict;
 use warnings;
-package Dist::Zilla::Plugin::OnlyCorePrereqs;
-# git description: v0.018-4-g34f66d4
-{ our $VERSION = '0.019'; }
+package Dist::Zilla::Plugin::OnlyCorePrereqs; # git description: v0.019-1-g3a8444d
 # ABSTRACT: Check that no prerequisites are declared that are not part of core
 # KEYWORDS: plugin distribution metadata prerequisites core
 # vim: set ts=8 sw=4 tw=78 et :
-
+$Dist::Zilla::Plugin::OnlyCorePrereqs::VERSION = '0.020';
 use Moose;
 with 'Dist::Zilla::Role::AfterBuild';
 use Moose::Util::TypeConstraints;
@@ -261,7 +259,7 @@ Dist::Zilla::Plugin::OnlyCorePrereqs - Check that no prerequisites are declared 
 
 =head1 VERSION
 
-version 0.019
+version 0.020
 
 =head1 SYNOPSIS
 
